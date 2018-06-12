@@ -1,20 +1,21 @@
 Small GUI application to estimate your cpu hashrate for SHA256
 and after find appropriate Nonce for particular block of Bitcoin Blockchain.
-Program can be used also for experimental purpose.
+This is not fully complete program that can be used to mine bitcoin.It concerned
+only for checking hash validation for finded Nonce.
  
-Requirements:
-Platform = Linux
-Installed - Qmake,Make
-Compiler = g++
+Requirements:  
+Platform = Linux  
+Building tools - Qmake Make  
+Compiler = g++  
 
-At first run:
-Qmake NOnce.pro
-Than run:
-make
-After building run app
-./Nonce
-Clean All:
-make clean
+At first run:  
+Qmake Nonce.pro  
+Than run:  
+make  
+After building run app  
+./Nonce  
+Clean All:  
+make clean  
 
 # Bitcoin_Blockchain
 
