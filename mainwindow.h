@@ -15,6 +15,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+
 signals:
 	void Initialize(Ui::MainWindow*);
 	void Find(Ui::MainWindow*, bool, int);

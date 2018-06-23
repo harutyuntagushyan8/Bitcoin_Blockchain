@@ -62,17 +62,17 @@ std::string BLOCK::DoubleSHA256(std::string text)
 {
     SHA256 sha;
 	std::string str1;
-	for(uint i=0;  i< text.size(); i+=2)
+	for(uint i = 0; i < text.size(); i += 2)
 	{
-        std::string byte = text.substr(i,2);
+		std::string byte = text.substr(i, 2);
         char chr = (char) (int)strtol(byte.c_str(), NULL, 16);
 		str1.push_back(chr);
     }
 	std::string s = sha(str1);
 	std::string str2;
-	for(uint i=0; i< s.size(); i+=2)
+	for(uint i = 0; i < s.size(); i += 2)
 	{
-        std::string byte = s.substr(i,2);
+		std::string byte = s.substr(i, 2);
         char chr = (char) (int)strtol(byte.c_str(), NULL, 16);
 		str2.push_back(chr);
     }

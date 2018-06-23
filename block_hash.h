@@ -27,6 +27,7 @@ private:                                                // BLOCK HEADER
 public:
     BLOCK(QObject *parent = 0);
     ~BLOCK();
+
 private:
 	void Reverse_by_Pair(std::string& input, bool reverse);
 	std::string DoubleSHA256(std::string text);

@@ -68,36 +68,29 @@ void MainWindow::Validations()
 
 void MainWindow::Hashrate()
 {
-	uint count = 100;
-	uint iterations = 10000;
+	uint count = 30;
+	uint iterations = 100000;
 	double hashrate[count];
-	std::string input = "Bitcoin";
+	std::string input = "";
 	SHA256 sha;
-	for(uint i = 0; i < count; i++)
+	double sum = 0;
+
+	for(uint i = 0; i < count; ++i)
 	{
 		auto start = std::chrono::high_resolution_clock::now();
-		uint j = 0;
-		unsigned int tot = 0; // number of hashes calculated
-		do
+		for(uint j = 0; j < iterations; ++j)
 		{
-			sha(input);
-			tot++;
-			++j;
+				sha(input + "Bitcoin");
 		}
-		while(j < iterations);
 		auto end = std::chrono::high_resolution_clock::now();
 		std::chrono::duration <double> elapsed = end - start;
 		ms d = std::chrono::duration_cast<ms> (elapsed);
-		double avg = iterations * 1000 / d.count();
-		hashrate[i] = avg;
-	 }
-
-	 double sum = 0;
-	 for(uint i = 0; i < count; i++)
+		hashrate[i] = iterations * 1000 / d.count();
 		sum += hashrate[i];
+	}
 
 	 double avg_rate = sum / count;
-	 ui->lineEdit_hashrate->setText(QString::number(avg_rate/pow(10,6),'f',2) + " MH/s");
+	 ui->lineEdit_hashrate->setText(QString::number(avg_rate/pow(10,6),'f',4) + " MH/s");
 }
 
 void MainWindow::DeactivateAll()
@@ -349,3 +342,12 @@ MainWindow::~MainWindow()
 {
 	delete ui;
 }
+
+
+
+
+
+
+
+
+
