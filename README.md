@@ -6,6 +6,8 @@ only for checking hash validation for finded Nonce.
 Requirements:  
 Platform = Linux  
 Building tools - Qmake Make  
+sudo apt install qt5-default(This will install qmake and libs)
+  sudo apt install make  
 Compiler = g++  
 
 At first run:  
