@@ -235,3 +235,4 @@ void BLOCK::StartFind()
     Find_Nonce(ui, interval_start, interval_end);
     emit finished();
 }
+

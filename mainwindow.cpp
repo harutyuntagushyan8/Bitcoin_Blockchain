@@ -44,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(Hashrate()));
     connect(ui->pushButton_enterManually, SIGNAL(clicked(bool)),
             this, SLOT(ActivateInputs()));
+    connect(ui->pushButton_reset, SIGNAL(clicked(bool)),
+            this, SLOT(Reset_Clicked()));
     connect(ui->pushButton_confirm, SIGNAL(clicked(bool)),
             this, SLOT(ActivateCommands()));
     connect(ui->radioButton_realCalc, SIGNAL(clicked(bool)),
@@ -56,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(Execute()));
     connect(ui->pushButton_findTestNonce, SIGNAL(clicked(bool)),
             this, SLOT(Execute()));
+    connect(ui->pushButton_clearOutput, SIGNAL(clicked(bool)),
+            this, SLOT(ClearOutput_Clicked()));
 }
 
 void MainWindow::Validations()
@@ -99,11 +103,17 @@ void MainWindow::Hashrate()
         threads.push_back(new QThread);
         emit SigIntervals(ranges[i].first, ranges[i].second);
         hashes[i]->moveToThread(threads[i]);
-        connect(threads[i], SIGNAL(started()), hashes[i], SLOT(Start()));
-        connect(hashes[i], SIGNAL(finished()), threads[i], SLOT(quit()));
-        connect(hashes[i], SIGNAL(finished()), hashes[i], SLOT(deleteLater()));
-        connect(threads[i], SIGNAL(finished()), threads[i], SLOT(deleteLater()));
-        connect(hashes[i], SIGNAL(HashrateReady(double)), this, SLOT(SetHashrate(double)));
+
+        connect(threads[i], SIGNAL(started()),
+                hashes[i], SLOT(Start()));
+        connect(hashes[i], SIGNAL(finished()),
+                threads[i], SLOT(quit()));
+        connect(hashes[i], SIGNAL(finished()),
+                hashes[i], SLOT(deleteLater()));
+        connect(threads[i], SIGNAL(finished()),
+                threads[i], SLOT(deleteLater()));
+        connect(hashes[i], SIGNAL(HashrateReady(double)),
+                this, SLOT(SetHashrate(double)));
         threads[i]->start();
     }
 }
@@ -127,10 +137,10 @@ void MainWindow::SetHashrate(double result)
 
 void MainWindow::DeactivateAll()
 {
-	ui->frame_block->setEnabled(false);
-	ui->pushButton_confirm->setEnabled(false);
-	ui->pushButton_reset->setEnabled(false);
-	DeactivateCommands();
+    ui->frame_block->setEnabled(false);
+    ui->pushButton_confirm->setEnabled(false);
+    ui->pushButton_reset->setEnabled(false);
+    DeactivateCommands();
 }
 
 void MainWindow::DeactivateCommands()
@@ -148,6 +158,8 @@ void MainWindow::DeactivateCommands()
     ui->pushButton_findTestNonce->setEnabled(false);
     ui->label_nonce->setEnabled(false);
     ui->lineEdit_nonce->setEnabled(false);
+    ui->label_threads->setEnabled(false);
+    ui->comboBox_zeroes->setEnabled(false);
     ui->label_elapsedTime->setEnabled(false);
     ui->lineEdit_elapsedTime->setEnabled(false);
     ui->pushButton_clearOutput->setEnabled(false);
@@ -267,7 +279,7 @@ void MainWindow::ActivateCommands()
     {
         ui->radioButton_realCalc->setEnabled(false);
         ui->radioButton_testCalc->setEnabled(false);
-        //ui->pushButton_reset->setEnabled(false);
+		ui->pushButton_reset->setEnabled(false);
     }
     else
     {
@@ -315,6 +327,8 @@ void MainWindow::MiddleSignal()
         ui->label_elapsedTime->setEnabled(true);
         ui->lineEdit_elapsedTime->setEnabled(true);
         ui->pushButton_clearOutput->setEnabled(true);
+        ui->label_threads->setEnabled(false);
+        ui->comboBox_threads->setEnabled(false);
         ui->label_threads->setEnabled(false);
         ui->comboBox_threads->setEnabled(false);
 
@@ -386,7 +400,7 @@ void MainWindow::Execute()
             obj[i]->moveToThread(threads[i]);
 
             connect(threads[i], SIGNAL(started()),
-                    obj[i], SLOT(startFind()));
+                    obj[i], SLOT(StartFind()));
             connect(obj[i], SIGNAL(finished()),
                     threads[i], SLOT(quit()));
             connect(obj[i], SIGNAL(finished()),
@@ -394,9 +408,9 @@ void MainWindow::Execute()
             connect(threads[i], SIGNAL(finished()),
                     threads[i], SLOT(deleteLater()));
             connect(obj[i], SIGNAL(Nonce(QString, uint, QString, QString, uint, QString, QString, QString)),
-                    this, SLOT(printText(QString, uint, QString, QString, uint, QString, QString, QString)));
-            connect(obj[i], SIGNAL(PartialTime(double)),
-                    this, SLOT(UpdateTime(double)));
+					this, SLOT(PrintText(QString, uint, QString, QString, uint, QString, QString, QString)));
+			connect(obj[i], SIGNAL(PartialTime(uint)),
+					this, SLOT(UpdateTime(uint)));
             threads[i]->start();
         }
         btn->setEnabled(false);
