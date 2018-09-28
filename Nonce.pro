@@ -15,10 +15,12 @@ CONFIG += c++11
 SOURCES += main.cpp\
         mainwindow.cpp \
     sha2.cpp \
-    block_hash.cpp
+    block_hash.cpp \
+    hash.cpp
 
 HEADERS  += mainwindow.h \
     sha2.h \
-    block_hash.h
+    block_hash.h \
+    hash.h
 
 FORMS    += mainwindow.ui

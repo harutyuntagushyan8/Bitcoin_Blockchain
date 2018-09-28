@@ -7,6 +7,8 @@ namespace Ui {
 class MainWindow;
 }
 
+extern uint threadCount;
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -14,11 +16,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-
 signals:
-	void Initialize(Ui::MainWindow*);
-	void Find(Ui::MainWindow*, bool, int);
+    void SigValues(Ui::MainWindow*, uint, uint);
+    void SigIntervals(uint, uint);
 
 private:
 	void Validations();
@@ -29,18 +29,20 @@ private:
 
 private slots:
     void Hashrate();
+    void SetHashrate(double);
 	void ActivateInputs();
 	void ActivateCommands();
 	void MiddleSignal();
 	void Execute();
-	void SetZeroes(int zeroes);
-	void on_pushButton_clearOutput_clicked();
-	void on_pushButton_reset_clicked();
+    void SetZeroes(int zeroes);
+    void ClearOutput_Clicked();
+    void Reset_Clicked();
+    void UpdateTime(uint);
+    void PrintText(QString, uint, QString, QString, uint, QString, QString, QString);
 
 private:
     Ui::MainWindow *ui;
-	bool b;
-	int zeroes;
+    int zeroes;
 };
 
 #endif // MAINWINDOW_H
