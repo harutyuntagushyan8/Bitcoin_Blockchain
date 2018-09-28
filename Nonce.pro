@@ -13,14 +13,14 @@ TEMPLATE = app
 CONFIG += c++11
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    sha2.cpp \
-    block_hash.cpp \
-    hash.cpp
+           mainwindow.cpp \
+           sha2.cpp \
+           block_hash.cpp \
+           hash.cpp
 
 HEADERS  += mainwindow.h \
-    sha2.h \
-    block_hash.h \
-    hash.h
+            sha2.h \
+            block_hash.h \
+            hash.h
 
 FORMS    += mainwindow.ui

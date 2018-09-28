@@ -21,19 +21,19 @@ signals:
     void SigIntervals(uint, uint);
 
 private:
-	void Validations();
-	void DeactivateAll();
-	void DeactivateCommands();
-	void SetLabelsText();
-	void ResetLineEditsText();
+    void Validations();
+    void DeactivateAll();
+    void DeactivateCommands();
+    void SetLabelsText();
+    void ResetLineEditsText();
 
 private slots:
     void Hashrate();
     void SetHashrate(double);
-	void ActivateInputs();
-	void ActivateCommands();
-	void MiddleSignal();
-	void Execute();
+    void ActivateInputs();
+    void ActivateCommands();
+    void MiddleSignal();
+    void Execute();
     void SetZeroes(int zeroes);
     void ClearOutput_Clicked();
     void Reset_Clicked();

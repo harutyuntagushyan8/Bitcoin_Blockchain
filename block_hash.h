@@ -11,10 +11,6 @@ class BLOCK : public QObject
 {
     Q_OBJECT
 
-public:
-    BLOCK(QObject *parent = 0);
-    ~BLOCK();
-
 private:
     void Copy_To_Block();
     void Bits_To_Target();
@@ -25,7 +21,7 @@ signals:
     void Nonce(QString, uint, QString, QString, uint, QString, QString, QString);
 
 public slots:
-	void Initialize(Ui::MainWindow* ui);
+    void Initialize(Ui::MainWindow* ui);
     uint Nonce_Cycle(Ui::MainWindow* ui);
     void Find_Nonce(Ui::MainWindow* ui);
     uint Nonce_Cycle(Ui::MainWindow* ui, uint interval_start, uint interval_end);

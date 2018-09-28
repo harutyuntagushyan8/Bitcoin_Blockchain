@@ -9,7 +9,6 @@ double HASH::ThreadHashrate()
     auto start = std::chrono::high_resolution_clock::now();
     for(uint i = interval_start; i < interval_end; ++i)
     {
-
         sha("Bitcoin");
     }
     auto end = std::chrono::high_resolution_clock::now();

@@ -9,40 +9,35 @@
 #include <sstream>
 #include <QDateTime>
 
-BLOCK::BLOCK(QObject* parent):QObject(parent)
-{
-
-}
-
 void BLOCK::Initialize(Ui::MainWindow* ui)
 {
     if (ui->radioButton_version1->isChecked())
-		version = "00000001";
+        version = "00000001";
     if (ui->radioButton_version2->isChecked())
-		version = "00000002";
-	prev_hash = ui->lineEdit_previousHash->text().toStdString();
+        version = "00000002";
+    prev_hash = ui->lineEdit_previousHash->text().toStdString();
     merkle_root = ui->lineEdit_merkleRoot->text().toStdString();
-	difficulty = ui->lineEdit_difficulty->text().toUInt();
+    difficulty = ui->lineEdit_difficulty->text().toUInt();
 
     if (ui->radioButton_realCalc->isChecked())
-	{
-		bits_decimal = ui->lineEdit_bits->text().toUInt();
-		{
-			std::stringstream ss;
-			ss << std::setfill('0') << std::setw(8) << std::hex << bits_decimal;
-			bits = ss.str();
-		}
-		target = "0000000000000000000000000000000000000000000000000000000000000000";
-		Bits_To_Target();
-	}
+    {
+        bits_decimal = ui->lineEdit_bits->text().toUInt();
+        {
+            std::stringstream ss;
+            ss << std::setfill('0') << std::setw(8) << std::hex << bits_decimal;
+            bits = ss.str();
+        }
+        target = "0000000000000000000000000000000000000000000000000000000000000000";
+        Bits_To_Target();
+    }
 
     QDateTime dt = QDateTime::fromString(ui->lineEdit_timestamp->text(), Qt::ISODate);
-	timestamp = (uint)(dt.toMSecsSinceEpoch() / 1000) + 4 * 3600;
-	{
-		std::stringstream ss;
-		ss << std::setfill('0') << std::setw(8) << std::hex << timestamp;
-		hex_time = ss.str();
-	}
+    timestamp = (uint)(dt.toMSecsSinceEpoch() / 1000) + 4 * 3600;
+    {
+        std::stringstream ss;
+        ss << std::setfill('0') << std::setw(8) << std::hex << timestamp;
+        hex_time = ss.str();
+    }
 }
 
 // Due to bitcoin specification data before hashing must be in littlendian
@@ -58,22 +53,22 @@ void Reverse_by_Pair(std::string& input)
 std::string DoubleSHA256(std::string text)
 {
     SHA256 sha;
-	std::string str1;
-	for(uint i = 0; i < text.size(); i += 2)
-	{
-		std::string byte = text.substr(i, 2);
+    std::string str1;
+    for(uint i = 0; i < text.size(); i += 2)
+    {
+        std::string byte = text.substr(i, 2);
         char chr = (char) (int)strtol(byte.c_str(), NULL, 16);
-		str1.push_back(chr);
+        str1.push_back(chr);
     }
-	std::string s = sha(str1);
-	std::string str2;
-	for(uint i = 0; i < s.size(); i += 2)
-	{
-		std::string byte = s.substr(i, 2);
+    std::string s = sha(str1);
+    std::string str2;
+    for(uint i = 0; i < s.size(); i += 2)
+    {
+        std::string byte = s.substr(i, 2);
         char chr = (char) (int)strtol(byte.c_str(), NULL, 16);
         str2.push_back(chr);
     }
-	return sha(str2);
+    return sha(str2);
 }
 
 // Merge all arguments together and give block_without_nonce
@@ -84,7 +79,7 @@ void BLOCK::Copy_To_Block()
     Reverse_by_Pair(merkle_root);
     Reverse_by_Pair(hex_time);
     Reverse_by_Pair(bits);
-	block_without_nonce = version + prev_hash + merkle_root + hex_time + bits;
+    block_without_nonce = version + prev_hash + merkle_root + hex_time + bits;
 }
 
 int Hex2Int(char ch)
@@ -112,51 +107,51 @@ void BLOCK::Bits_To_Target()
 
 uint BLOCK::Nonce_Cycle(Ui::MainWindow* ui)
 {
-	Copy_To_Block();
-	auto start = std::chrono::high_resolution_clock::now();
-	std::chrono::high_resolution_clock::time_point end;
-	std::chrono::duration<double> elapsed;
+    Copy_To_Block();
+    auto start = std::chrono::high_resolution_clock::now();
+    std::chrono::high_resolution_clock::time_point end;
+    std::chrono::duration<double> elapsed;
 
-	for( nonce = 0; nonce <= std::numeric_limits<uint>::max() ; ++nonce)
-	{
+    for( nonce = 0; nonce <= std::numeric_limits<uint>::max() ; ++nonce)
+    {
         // Convert nonce to hex format
-		{
-			std::stringstream ss;
-			ss << std::setfill('0') << std::setw(8) << std::hex << nonce;
-			hex_nonce = ss.str();
-		}
+        {
+            std::stringstream ss;
+            ss << std::setfill('0') << std::setw(8) << std::hex << nonce;
+            hex_nonce = ss.str();
+        }
 
         // Finalize block
         Reverse_by_Pair(hex_nonce);
-		header = block_without_nonce + hex_nonce;
-		std::string double_hash = DoubleSHA256(header);
+        header = block_without_nonce + hex_nonce;
+        std::string double_hash = DoubleSHA256(header);
         Reverse_by_Pair(double_hash);
 
-		// Check validity
+        // Check validity
         if (double_hash < target)
-		{
+        {
             ui->textEdit_output->append("Block header parts in little endian form are");
             ui->textEdit_output->append("Version = " + QString::fromStdString(version));
             ui->textEdit_output->append("Previous Hash = " + QString::fromStdString(prev_hash));
             ui->textEdit_output->append("Merkle Root = " + QString::fromStdString(merkle_root));
             ui->textEdit_output->append("Timestamp = " + QString::fromStdString(hex_time) +
-                                 " and in decimal is " + QString::number(timestamp));
+                                        " and in decimal is " + QString::number(timestamp));
             ui->textEdit_output->append("Bits = " + QString::fromStdString(bits) +
-                                 " for test target ");
+                                        " for test target ");
             ui->textEdit_output->append("Nonce = " + QString::fromStdString(hex_nonce) +
-                                 " and in decimal is " + QString::number(nonce) + "\n");
+                                        " and in decimal is " + QString::number(nonce) + "\n");
             ui->textEdit_output->append("Block header data in little endian form is " +
-                                 QString::fromStdString(header));
+                                        QString::fromStdString(header));
             ui->textEdit_output->append("Double hash is    " +
-                                 QString::fromStdString(double_hash));
+                                        QString::fromStdString(double_hash));
             ui->textEdit_output->append("Current target is " +
-                                 QString::fromStdString(target) + "\n");
+                                        QString::fromStdString(target) + "\n");
             ui->lineEdit_nonce->setText(QString::number(nonce));
             break;
-		}
-	}
-	end = std::chrono::high_resolution_clock::now();
-	elapsed = end - start;
+        }
+    }
+    end = std::chrono::high_resolution_clock::now();
+    elapsed = end - start;
     return (uint)elapsed.count();
 }
 
@@ -197,7 +192,7 @@ uint BLOCK::Nonce_Cycle(Ui::MainWindow* ui, uint interval_start, uint interval_e
 void BLOCK::Find_Nonce(Ui::MainWindow* ui)
 {
     double time_interval = 0;
-	time_interval = Nonce_Cycle(ui);
+    time_interval = Nonce_Cycle(ui);
     ui->lineEdit_elapsedTime->setText(QString::number(time_interval));
     if(ui->textEdit_output->toPlainText().isEmpty())
     {
@@ -239,9 +234,4 @@ void BLOCK::StartFind()
 {
     Find_Nonce(ui, interval_start, interval_end);
     emit finished();
-}
-
-BLOCK::~BLOCK()
-{
-
 }
