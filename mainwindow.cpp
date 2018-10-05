@@ -94,9 +94,17 @@ void MainWindow::readFromFile()
         QTextStream in(&file);
         while (!in.atEnd())
         {
-            QString line = in.readLine();
-            if (line.left(7) == ("Block " + ui->lineEdit_block->text()))
+            if (in.readLine().left(7) == ("Block " + ui->lineEdit_block->text()))
             {
+                QString line = in.readLine();
+                if (line == "1")
+                {
+                    ui->radioButton_version1->setChecked(true);
+                }
+                else if (line == "2")
+                {
+                    ui->radioButton_version2->setChecked(true);
+                }
                 ui->lineEdit_previousHash->setText(in.readLine());
                 ui->lineEdit_merkleRoot->setText(in.readLine());
                 ui->lineEdit_timestamp->setText(in.readLine());
@@ -106,6 +114,7 @@ void MainWindow::readFromFile()
             }
         }
         file.close();
+        ui->pushButton_confirm->setEnabled(true);
     }
 }
 
