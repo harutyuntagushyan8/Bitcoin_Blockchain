@@ -5,6 +5,8 @@
 #include "block_hash.h"
 #include <chrono>
 #include <cmath>
+#include <iostream>
+#include <memory>
 #include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -14,13 +16,11 @@
 #include <QRegExp>
 #include <QValidator>
 #include <QThread>
-#include <iostream>
-#include <memory>
 
 uint threadCount = QThread::idealThreadCount();
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),ui(new Ui::MainWindow), zeroes(0)
+    QMainWindow(parent), ui(new Ui::MainWindow), zeroes(0)
 {
     ui->setupUi(this);
     this->setFixedSize(940,860);
@@ -71,19 +71,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::readFromFile()
 {
-    QPalette *palette = new QPalette();
-    if (ui->lineEdit_block->text().isEmpty() || ui->lineEdit_block->text() == "Input number")
+    if (ui->lineEdit_block->text().isEmpty() || ui->lineEdit_block->text() == "Wrong! input number")
     {
-        ui->lineEdit_block->setText("Input number");
-        palette->setColor(QPalette::Text,Qt::red);
-        ui->lineEdit_block->setPalette(*palette);
+        ui->lineEdit_block->setText("Wrong! input number");
         ui->lineEdit_block->setValidator(new QIntValidator(0, 10000000, this));
         return;
     }
     else
     {
-        palette->setColor(QPalette::Text,Qt::black);
-        ui->lineEdit_block->setPalette(*palette);
         QString fileName = QFileDialog::getOpenFileName(this, "Choose Blocks file", QDir::homePath() , "*.txt");
         QFile file(fileName);
         if (!file.open(QIODevice::ReadOnly))
@@ -134,7 +129,7 @@ void MainWindow::Hashrate()
     uint range = 50000000 / threadCount;
     uint interval_start = 0, interval_end = range;
     std::vector<std::pair<uint, uint>> ranges;
-    for(uint i = 0; i < (threadCount - 1) ; ++i) {
+    for (uint i = 0; i < (threadCount - 1) ; ++i) {
         ranges.push_back(std::make_pair(interval_start, interval_end));
         interval_start += range;
         interval_end += range;
@@ -142,19 +137,19 @@ void MainWindow::Hashrate()
     ranges.push_back(std::make_pair(interval_start, 50000000));
 
     std::vector<HASH*> hashes;
-    for(uint i = 0; i < threadCount; ++i)
+    for (uint i = 0; i < threadCount; ++i)
     {
         hashes.push_back(new HASH);
     }
 
-    for(uint i = 0; i < threadCount; ++i)
+    for (uint i = 0; i < threadCount; ++i)
     {
         connect(this, SIGNAL(SigIntervals(uint, uint)),
                 hashes[i], SLOT(ReceiveIntervals(uint, uint)));
     }
 
     std::vector<QThread*> threads;
-    for(uint i = 0; i < threadCount; ++i)
+    for (uint i = 0; i < threadCount; ++i)
     {
         threads.push_back(new QThread);
         emit SigIntervals(ranges[i].first, ranges[i].second);
@@ -406,8 +401,8 @@ void MainWindow::SetZeroes(int zeroes)
 {
     this->zeroes = zeroes;
     QString target = "61e9f800000000000000000000000000"
-					 "00000000000000000000000000000000";
-    for(int i = 0; i < zeroes; i++)
+                     "00000000000000000000000000000000";
+    for (int i = 0; i < zeroes; ++i)
     {
         target[i] = '0';
     }
@@ -430,7 +425,7 @@ void MainWindow::Execute()
         uint range = std::numeric_limits<uint>::max() / threadCount;
         uint interval_start = 0, interval_end = range;
         std::vector<std::pair<uint, uint>> ranges;
-        for(uint i = 0; i < (threadCount - 1) ; ++i) {
+        for (uint i = 0; i < (threadCount - 1) ; ++i) {
             ranges.push_back(std::make_pair(interval_start, interval_end));
             interval_start += range;
             interval_end += range;
@@ -438,18 +433,18 @@ void MainWindow::Execute()
         ranges.push_back(std::make_pair(interval_start, std::numeric_limits<uint>::max()));
 
         std::vector<BLOCK*> obj;
-        for(uint i = 0; i < threadCount; ++i)
+        for (uint i = 0; i < threadCount; ++i)
         {
             obj.push_back(new BLOCK);
         }
-        for(uint i = 0; i < threadCount; ++i)
+        for (uint i = 0; i < threadCount; ++i)
         {
             connect(this, SIGNAL(SigValues(Ui::MainWindow*, uint, uint)),
                     obj[i], SLOT(ReceiveValues(Ui::MainWindow*, uint, uint)));
         }
 
         std::vector<QThread*> threads;
-        for(uint i = 0; i < threadCount; ++i)
+        for (uint i = 0; i < threadCount; ++i)
         {
             threads.push_back(new QThread);
             emit SigValues(ui, ranges[i].first, ranges[i].second);
@@ -464,9 +459,9 @@ void MainWindow::Execute()
             connect(threads[i], SIGNAL(finished()),
                     threads[i], SLOT(deleteLater()));
             connect(obj[i], SIGNAL(Nonce(QString, uint, QString, QString, uint, QString, QString, QString)),
-					this, SLOT(PrintText(QString, uint, QString, QString, uint, QString, QString, QString)));
-			connect(obj[i], SIGNAL(PartialTime(uint)),
-					this, SLOT(UpdateTime(uint)));
+                    this, SLOT(PrintText(QString, uint, QString, QString, uint, QString, QString, QString)));
+            connect(obj[i], SIGNAL(PartialTime(uint)),
+                    this, SLOT(UpdateTime(uint)));
             threads[i]->start();
         }
         btn->setEnabled(false);
@@ -507,10 +502,14 @@ void MainWindow::PrintText(QString hex_time, uint timestamp, QString bits, QStri
                            QString header, QString double_hash, QString target)
 {
     ui->textEdit_output->append("Block header parts in little endian form are");
-    if(ui->radioButton_version1->isChecked())
+    if (ui->radioButton_version1->isChecked())
+    {
         ui->textEdit_output->append("Version = 01000000");
-    if(ui->radioButton_version2->isChecked())
+    }
+    if (ui->radioButton_version2->isChecked())
+    {
         ui->textEdit_output->append("Version = 02000000");
+    }
     std::string prev_hash = ui->lineEdit_previousHash->text().toStdString();
     Reverse_by_Pair(prev_hash);
     ui->textEdit_output->append("Previous Hash = " + QString::fromStdString(prev_hash));
