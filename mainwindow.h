@@ -28,6 +28,7 @@ private:
     void ResetLineEditsText();
 
 private slots:
+    void readFromFile();
     void Hashrate();
     void SetHashrate(double);
     void ActivateInputs();

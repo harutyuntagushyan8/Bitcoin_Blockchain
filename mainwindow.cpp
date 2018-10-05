@@ -5,6 +5,11 @@
 #include "block_hash.h"
 #include <chrono>
 #include <cmath>
+#include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QDir>
+#include <QTextStream>
 #include <QString>
 #include <QRegExp>
 #include <QValidator>
@@ -40,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent) :
     Validations();
     DeactivateAll();
 
+    connect(ui->pushButton_getBlockInformation, SIGNAL(clicked(bool)),
+            this, SLOT(readFromFile()));
     connect(ui->pushButton_hashrate, SIGNAL(clicked(bool)),
             this, SLOT(Hashrate()));
     connect(ui->pushButton_enterManually, SIGNAL(clicked(bool)),
@@ -60,6 +67,46 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(Execute()));
     connect(ui->pushButton_clearOutput, SIGNAL(clicked(bool)),
             this, SLOT(ClearOutput_Clicked()));
+}
+
+void MainWindow::readFromFile()
+{
+    QPalette *palette = new QPalette();
+    if (ui->lineEdit_block->text().isEmpty() || ui->lineEdit_block->text() == "Input number")
+    {
+        ui->lineEdit_block->setText("Input number");
+        palette->setColor(QPalette::Text,Qt::red);
+        ui->lineEdit_block->setPalette(*palette);
+        ui->lineEdit_block->setValidator(new QIntValidator(0, 10000000, this));
+        return;
+    }
+    else
+    {
+        palette->setColor(QPalette::Text,Qt::black);
+        ui->lineEdit_block->setPalette(*palette);
+        QString fileName = QFileDialog::getOpenFileName(this, "Choose Blocks file", QDir::homePath() , "*.txt");
+        QFile file(fileName);
+        if (!file.open(QIODevice::ReadOnly))
+        {
+            QMessageBox::information(0, "error", file.errorString());
+        }
+
+        QTextStream in(&file);
+        while (!in.atEnd())
+        {
+            QString line = in.readLine();
+            if (line.left(7) == ("Block " + ui->lineEdit_block->text()))
+            {
+                ui->lineEdit_previousHash->setText(in.readLine());
+                ui->lineEdit_merkleRoot->setText(in.readLine());
+                ui->lineEdit_timestamp->setText(in.readLine());
+                ui->lineEdit_bits->setText(in.readLine());
+                ui->lineEdit_difficulty->setText(in.readLine());
+                break;
+            }
+        }
+        file.close();
+    }
 }
 
 void MainWindow::Validations()
@@ -466,7 +513,8 @@ void MainWindow::PrintText(QString hex_time, uint timestamp, QString bits, QStri
     ui->textEdit_output->append("Nonce = " + hex_nonce + " and in decimal is " + QString::number(nonce));
     ui->textEdit_output->append("Block header data in little endian form is " + header);
     ui->textEdit_output->append("Double hash is   " + double_hash);
-    ui->textEdit_output->append("Current target is " + target);
+    ui->textEdit_output->append("Current target is " + target + "\n");
+
     ui->lineEdit_nonce->setText(ui->lineEdit_nonce->text() + QString::number(nonce) + " ");
 }
 
