@@ -89,7 +89,7 @@ void MainWindow::readFromFile()
         QTextStream in(&file);
         while (!in.atEnd())
         {
-            if (in.readLine().left(7) == ("Block " + ui->lineEdit_block->text()))
+            if (in.readLine().left(6 + ui->lineEdit_block->text().size()) == ("Block " + ui->lineEdit_block->text()))
             {
                 QString line = in.readLine();
                 if (line == "1")
@@ -118,7 +118,7 @@ void MainWindow::Validations()
     ui->lineEdit_previousHash->setValidator(new QRegExpValidator(QRegExp("[0-9a-f]{64}"),this));
     ui->lineEdit_merkleRoot->setValidator(new QRegExpValidator(QRegExp("[0-9a-f]{64}"),this));
     ui->lineEdit_timestamp->setValidator(new QRegExpValidator(QRegExp("([2]{1}[0-9]{3})\\-(0?[1-9]|1[012])\\-"
-                                         "([0-2]{1}[1-9]{1}|[3][0]|[3][1])\\s(([0-1]{1}[0-9]{1})|[2][0]|[2][1]|[2][2]|[2][3])\\:"
+                                         "([0-2]{1}[1-9]{1}|[1][0]|[2][0]|[3][0]|[3][1])\\s(([0-1]{1}[0-9]{1})|[2][0]|[2][1]|[2][2]|[2][3])\\:"
                                          "[0-5]{1}[0-9]{1}\\:[0-5]{1}[0-9]{1}"),this));
     ui->lineEdit_bits->setValidator(new QRegExpValidator(QRegExp("[1-9]{1}[0-9]{,9}"),this));
     ui->lineEdit_difficulty->setValidator(new QRegExpValidator(QRegExp("[1-9]{1}[0-9]{,20}"),this));
