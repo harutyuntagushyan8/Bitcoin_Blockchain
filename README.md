@@ -1,18 +1,25 @@
-Small GUI application to estimate your cpu hashrate for SHA256,
-find appropriate Nonce for particular block of Bitcoin Blockchain.
-This is not fully complete program that can be used to mine bitcoin.It concerned
-only finding Nonce for appropriate block.
- 
-Requirements:  
-QT Tools or build with qmake  
-On  Linux:  
-sudo apt install build-essential (Compiler ,linker, ...)  
-sudo apt install qt5-default(This will install qmake and libs)
-   sudo apt install make  
+# Bitcoin Block Explorer & Nonce Finder (Educational)
 
-Build steps:  
-Qmake Nonce.pro  
-make  
-./Nonce  
-Clean All:  
-make clean  
+This is a **small GUI application** that demonstrates how to:
+- Estimate your CPU hashrate for **SHA-256**.
+- Find an appropriate **Nonce** for a particular Bitcoin block.
+
+⚠️ **Note:**  
+This is **not** a fully functional Bitcoin miner.  
+It is only intended for educational purposes and shows the process of finding a Nonce for a given block.
+
+---
+
+## Run Instructions
+
+### 1. Download Blockchain Data
+Run the Python helper script to fetch the first *N* blocks from the Bitcoin blockchain using [blockstream.info](https://blockstream.info):
+
+```sh
+python bitcoin_blocks.py 10
+```
+
+### 2. Download Blockchain Data
+Open in Qt Creator, Build and Run.
+Insert block number(not 0; it's genesys block) and press FindNonce
+After long execution it outputs to same windows and to json file with founded values and extra information
